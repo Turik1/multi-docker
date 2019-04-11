@@ -1,0 +1,26 @@
+sudo: required
+services:
+  - docker
+
+## Testing React Part
+before_install:
+  - docker build -t turik/react_test -f ./client/Dockerfile.dev ./client
+
+script:
+  # coverage so that the test suite exits (otherwise will stay in watchmode)
+  - docker run turik/react-test npm test -- --coverage
+
+### Production Dockerfiles
+after_success:
+  - docker build -t turik/multi-client ./client
+  - docker build -t turik/multi-nginx ./nginx
+  - docker build -t turik/multi-server ./server
+  - docker build -t turik/multi-worker ./worker
+  # Login to the docker CLI (Added at Travis-CI website)
+  # Retrieve docker_password and emit it in password-stdin to the docker login command
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take those images and push them to docker hub
+  - docker push turik/multi-client
+  - docker push turik/multi-nginx
+  - docker push turik/multi-server
+  - docker push turik/multi-worker
