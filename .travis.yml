@@ -4,7 +4,7 @@ services:
 
 ## Testing React Part
 before_install:
-  - docker build -t turik/react_test -f ./client/Dockerfile.dev ./client
+  - docker build -t turik/react-test -f ./client/Dockerfile.dev ./client
 
 script:
   # coverage so that the test suite exits (otherwise will stay in watchmode)
