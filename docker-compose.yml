@@ -5,13 +5,11 @@ services:
   redis:
     image: 'redis:latest'
   nginx:
-    # Always want to make sure, that nginx works (e.g. worker crushes, is not so bad, but nginx routes traffic for the entire application)
     restart: always
-    build: 
+    build:
       dockerfile: Dockerfile.dev
       context: ./nginx
     ports:
-      # if we want to access, than over the port 3050
       - '3050:80'
   api:
     build:
@@ -20,18 +18,13 @@ services:
     volumes:
       - /app/node_modules
       - ./server:/app
-    environment: 
-      # redis -> name of the redis service
+    environment:
       - REDIS_HOST=redis
-      # standard redis port (see docker-hub documentation)
       - REDIS_PORT=6379
       - PGUSER=postgres
-      # name of postgres service
       - PGHOST=postgres
       - PGDATABASE=postgres
-      # standard password for postgres (see DockerHub-Documentation)
       - PGPASSWORD=postgres_password
-      # Default port for postgres port
       - PGPORT=5432
   client:
     build:
@@ -41,12 +34,12 @@ services:
       - /app/node_modules
       - ./client:/app
   worker:
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     build:
       dockerfile: Dockerfile.dev
       context: ./worker
     volumes:
       - /app/node_modules
       - ./worker:/app
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
